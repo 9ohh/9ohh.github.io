@@ -1,0 +1,470 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5"><title>Hexo</title><meta name="author" content="ohh"><link rel="shortcut icon" href="/img/favicon.png"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/css/all.min.css"><meta name="generator" content="Hexo 6.2.0"><link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+</head><body><header id="page_header"><div class="header_wrap"><div id="blog_name"><a class="blog_title" id="site-name" href="/">Hexo</a></div><button class="menus_icon"><div class="navicon"></div></button><ul class="menus_items"><li class="menus_item"><a class="site-page" href="/#Publications"> Publications</a></li><li class="menus_item"><a class="site-page" href="/"> About</a></li><li class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://phower.me"> Blog</a></li></ul></div></header><main id="page_main"><div class="side-card sticky"><div class="card-wrap" itemscope itemtype="http://schema.org/Person"><div class="author-avatar"><img class="avatar-img" src="/sourse/img.jpg" onerror="this.onerror=null;this.src='/img/profile.png'" alt="avatar"></div><div class="author-discrip"><h3>ohh</h3><p class="author-bio">Your biography can be writed down here.</p></div><div class="author-links"><button class="btn m-social-links">Links</button><ul class="social-icons"><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-twitter" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-facebook-square" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-github" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-stack-overflow" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-linkedin" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-weibo" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-weixin" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fab fa-qq" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fas fa-envelope" aria-hidden="true"></i></a></li><li><a class="social-icon" href="/" target="_blank"><i class="fas fa-rss" aria-hidden="true"></i></a></li></ul><ul class="social-links"><li><a class="e-social-link" href="/" target="_blank"><i class="fas fa-graduation-cap" aria-hidden="true"></i><span>Google Scholar</span></a></li><li><a class="e-social-link" href="/" target="_blank"><i class="fab fa-orcid" aria-hidden="true"></i><span>ORCID</span></a></li></ul></div><a class="cv-links" href="/attaches/CV.pdf" target="_blank"><i class="fas fa-file-pdf" aria-hidden="true"><span>My Detail CV.</span></i></a></div></div><div class="page" itemscope itemtype="http://schema.org/CreativeWork"><h2 class="page-title">《spark基础环境配置》</h2><article><h1 id="《spark基础环境配置》"><a href="#《spark基础环境配置》" class="headerlink" title="《spark基础环境配置》"></a>《spark基础环境配置》</h1><p>打开一个hosts映射文件,为了保证后续相互关联的虚拟机能够通过主机名进行访问，根据实际需求配置<br>对应的IP和主机名映射，分别将主机名master、slave1、slave2 与IP地址 192.168.88.134、<br>192.168.88.135 和192.168.88.136进行了匹配映射(这里通常要根据实际需要，将要搭建的集群主机都<br>配置主机名和IP映射)。<br>编辑 &#x2F;etc&#x2F;hosts 文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>vim &#x2F;etc&#x2F;hosts<br>   内容修改为（注：三台主机内容一样）<br>   localhost4.localdomain4 ::1 localhost localhost.localdomain localhost6 localhost6.localdomain6<br>   192.168.88.135 node1<br>   192.168.88.136 node2<br>   192.168.88.137 node3</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>三、集群配置时间同步<br>定义：网络时间服务协议（Network Time Protocol, NTP），是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器做时间同步化。<br>原因：时间同步服务器，顾名思义就是来同步时间的。在集群中同步时间有着十分重要的作用，负载均衡集群或高可用集群如果时间不一致，在服务器之间的数据误差就会很大，寻找数据便会成为一件棘手的事情。若是时间无法同步，那么就算是备份了数据，你也可能无法在正确的时间将正确的数据备份。那损失可就大了。<br>yum 安装 ntp （注：三台主机做同样操作）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>yum install ntp -y<br>   开机自启动ntp<br>   systemctl enable ntpd &amp;&amp; systemctl start ntpd<br>   结果显示： [root@master ~]# systemctl enable ntpd &amp;&amp; systemctl start ntpd Created symlink from &#x2F;etc&#x2F;systemd&#x2F;system&#x2F;multi- user.target.wants&#x2F;ntpd.service to &#x2F;usr&#x2F;lib&#x2F;systemd&#x2F;system&#x2F;ntpd.service.</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>授权 192.168.88.0-192.168.10.255 网段上的所有机器可以从这台机器上查询和同步时间</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   #查看ntp配置文件<br>   ls -al &#x2F;etc | grep ‘ntp’<br>   #显示内容<br>   [root@node1 etc]# ls -al &#x2F;etc | grep ‘ntp’<br>   drwxr-xr-x 3 root root 52 3月 10 18:25 ntp<br>   -rw-r–r– 1 root root 2041 3月 10 20:03 ntp.conf<br>    #编辑内容添加 restrict 192.168.88.0 mask 255.255.255.0 （注：在17行左右） vim &#x2F;etc&#x2F;ntp.conf<br>    16 # Hosts on local network are less restricted.<br>    17 restrict 192.168.88.0 mask 255.255.255.0</p>
+</blockquote>
+</blockquote>
+<p>集群在局域网中，不使用其他互联网上的时间</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>#修改 /etc/ntpd.conf 内容
+vim vim /etc/ntp.conf # 
+</code></pre>
+</blockquote>
+</blockquote>
+<pre><code>将21-24行内容注释掉（注：原来未注释）   
+21 #server 0.centos.pool.ntp.org iburst 
+22 #server 1.centos.pool.ntp.org iburst 
+23 #server 2.centos.pool.ntp.org iburst 
+24 #server 3.centos.pool.ntp.org iburst 
+# 在25行添加 server masterIP 即为： server 192.168.88.135
+</code></pre>
+<p>node 和 node3 相同操作<br>三台主机同时执行</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   systemctl enable ntpd &amp;&amp; systemctl start ntpd</p>
+</blockquote>
+</blockquote>
+<p>查看ntp端口</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   [root@master etc]# ss -tupln | grep ‘123’ udp UNCONN 0 0 192.168.88.135:123 <em>:</em> users:((“ntpd”,pid&#x3D;54823,fd&#x3D;19)) udp UNCONN 0 0 127.0.0.1:123 <em>:</em> users:((“ntpd”,pid&#x3D;54823,fd&#x3D;18)) udp UNCONN 0 0 <em>:123 <em>:</em> users:((“ntpd”,pid&#x3D;54823,fd&#x3D;16)) udp UNCONN 0 0 [fe80::2832:5f98:5bc0:e621]%ens33:123 [::]:</em> users:((“ntpd”,pid&#x3D;54823,fd&#x3D;23)) udp UNCONN 0 0 [::1]:123 [::]:* users:((“ntpd”,pid&#x3D;54823,fd&#x3D;20)) udp UNCONN 0 0 [::]:123 [::]:* users:((“ntpd”,pid&#x3D;54823,fd&#x3D;17))</p>
+</blockquote>
+</blockquote>
+<p>配置完成后三台主机都需要重启</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   shutdown -r 0</p>
+</blockquote>
+</blockquote>
+<p>三台主机同时执行（注：此过程需要5分钟左右）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   ntpstat</p>
+</blockquote>
+</blockquote>
+<p>三、ssh免密钥登陆<br>SSH免密钥登陆可以更加方便的实现不同计算机之间的连接和切换<br>master 生成公钥私钥 (一路回车)<br>ssh-keygen </p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   #结果显示：<br>    [root@master .ssh]# ssh-keygen Generating public&#x2F;private rsa key pair.<br>    Enter file in which to save the key (&#x2F;root&#x2F;.ssh&#x2F;id_rsa):<br>    Enter passphrase (empty for no passphrase):<br>    Enter same passphrase again:<br>    Your identification has been saved in &#x2F;root&#x2F;.ssh&#x2F;id_rsa.<br>    Your public key has been saved in &#x2F;root&#x2F;.ssh&#x2F;id_rsa.pub. T<br>    he key fingerprint is: SHA256:QUAgFH5KBc&#x2F;Erlf1JWSBbKeEepPJqMBqpWbc02&#x2F;uFj8 root@master The key’s randomart image is:<br>    +—[RSA 2048]—-+<br>    | .&#x3D;++oo+.o+.     |<br>    | . <em>. ..</em>.o .    |<br>    |. o.++ *.+ o     |</p>
+</blockquote>
+</blockquote>
+<pre><code>|.o ++ B ...      | 
+|o.=o.o .S        |
+|.*oo.. .         | 
+|+ .. . o         | 
+| + E             | 
+| =o .            | 
++----[SHA256]-----+
+</code></pre>
+<p>查看隐藏的 .ssh 文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   la -al .ssh </p>
+</blockquote>
+</blockquote>
+<pre><code># 结果显示 
+[root@master ~]# ls -al .ssh/ 
+总用量 16 
+drwx------ 2 root root 80 3月 10 21:52 . 
+dr-xr-x---. 4 root root 175 3月 10 21:45 .. 
+-rw------- 1 root root 393 3月 10 21:52 authorized_keys 
+-rw------- 1 root root 1675 3月 10 21:48 id_rsa 
+-rw-r--r-- 1 root root 393 3月 10 21:48 id_rsa.pub 
+-rw-r--r-- 1 root root 366 3月 10 21:54 known_hosts
+</code></pre>
+<p>master 配置免密登录到master slave1 slave2</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   ssh-copy-id master<br>    ssh-copy-id slave1<br>    ssh-copy-id slave2</p>
+</blockquote>
+</blockquote>
+<p>四、安装配置 jdk<br>编译环境软件安装目录</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   mkdir -p &#x2F;export&#x2F;server</p>
+</blockquote>
+</blockquote>
+<p>JDK 1.8安装 上传 jdk-8u241-linux-x64.tar.gz到&#x2F;export&#x2F;server&#x2F;目录下 并解压文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   tar -zxvf jdk-8u241-linux-x64.tar.gz</p>
+</blockquote>
+</blockquote>
+<p>配置环境变量</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   vim &#x2F;etc&#x2F;profile export JAVA_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;jdk1.8.0_241 export PATH&#x3D;$PATH:$JAVA_HOME&#x2F;bin export CLASSPATH&#x3D;.:$JAVA_HOME&#x2F;lib&#x2F;dt.jar:$JAVA_HOME&#x2F;lib&#x2F;tools.jar</p>
+</blockquote>
+</blockquote>
+<p>重新加载环境变量文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   source &#x2F;etc&#x2F;profile</p>
+</blockquote>
+</blockquote>
+<p>查看 java 版本号</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>java -version 结果显示： [root@master jdk1.8.0_241]# java -version java version “1.8.0_241” Java(TM) SE Runtime Environment (build 1.8.0_241-b07) Java HotSpot(TM) 64-Bit Server VM (build 25.241-b07, mixed mode)</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>master 节点将 java 传输到 slave1 和 slave2</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   scp -r &#x2F;export&#x2F;server&#x2F;jdk1.8.0_241&#x2F; root@slave1:&#x2F;export&#x2F;server&#x2F; scp -r &#x2F;export&#x2F;server&#x2F;jdk1.8.0_241&#x2F; root@slave2:&#x2F;export&#x2F;server&#x2F;</p>
+</blockquote>
+</blockquote>
+<p>配置 slave1 和 slave2 的 jdk 环境变量（注：和上方 master 的配置方法一样）<br>在 master slave1 和slave2 创建软连接</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   cd &#x2F;export&#x2F;server<br>    ln -s jdk1.8.0_241&#x2F; jdk</p>
+</blockquote>
+</blockquote>
+<p>重新加载环境变量文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   source &#x2F;etc&#x2F;profile</p>
+</blockquote>
+</blockquote>
+<p>zookeeper安装配置<br>配置主机名和IP的映射关系，修改 &#x2F;etc&#x2F;hosts 文件，添加 master.root slave1.root slave2.root</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>vim /etc/hosts 
+#结果显示 
+127.0.0.1 localhost localhost.localdomain localhost4 localhost4.localdomain4 
+::1 localhost localhost.localdomain localhost6 localhost6.localdomain6 
+</code></pre>
+</blockquote>
+</blockquote>
+<pre><code>192.168.88.135 master master.root 192.168.88.136 slave1 slave1.root 192.168.88.137 slave2 slave2.root
+</code></pre>
+<p>zookeeper安装 上传 zookeeper-3.4.10.tar.gz到&#x2F;export&#x2F;server&#x2F;目录下 并解压文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   cd &#x2F;export&#x2F;server&#x2F; tar -zxvf zookeeper-3.4.10.tar.gz</p>
+</blockquote>
+</blockquote>
+<p>在 &#x2F;export&#x2F;server 目录下创建软连接</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>cd &#x2F;export&#x2F;server ln -s zookeeper-3.4.10&#x2F; zookeeper</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>进入 &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;conf&#x2F; 将 zoo_sample.cfg 文件复制为新文件 zoo.cfg</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>cd &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;conf&#x2F; cp zoo_sample.cfg zoo.cfg</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>接上步给 zoo.cfg 添加内容</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>#Zookeeper的数据存放目录 dataDir&#x3D;&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas<br>    # 保留多少个快照 autopurge.snapRetainCount&#x3D;3<br>    # 日志多少小时清理一次 autopurge.purgeInterval&#x3D;1<br>    # 集群中服务器地址 server.1&#x3D;master:2888:3888 server.2&#x3D;slave1:2888:3888 server.3&#x3D;slave2:2888:3888</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>进入 &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas 目录在此目录下创建 myid 文件，将 1 写入进去</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p> cd &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdata touch myid echo ‘1’ &gt; myid</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>将 master 节点中 &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10 路径下内容推送给slave1 和 slave2</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>scp -r &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10&#x2F; slave1:$PWD scp -r &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10&#x2F; slave2:$PWD</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>推送成功后，分别在 slave1 和 slave2 上创建软连接</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>ln -s zookeeper-3.4.10&#x2F; zookeeper</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>接上步推送完成后将 slave1 和 slave2 的 &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas&#x2F; 文件夹下的 myid中的内容分别改为 2 和3</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   cd &#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;zkdatas&#x2F; 结果显示： [root@slave1 zkdatas]# vim myid [root@slave1 zkdatas]# more myid 2[root@slave2 zkdatas]# vim myid [root@slave2 zkdatas]# more myid 3</p>
+</blockquote>
+</blockquote>
+<p>配置zookeeper的环境变量（注：三台主机都需要配置）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p> vim &#x2F;etc&#x2F;profile # zookeeper 环境变量 export ZOOKEEPER_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;zookeeper export PATH&#x3D;$PATH:$ZOOKEEPER_HOME&#x2F;bin</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>重新加载环境变量文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>source &#x2F;etc&#x2F;profile</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>进入 &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10&#x2F;bin 目录下启动 zkServer.sh 脚本 （注：三台都需要做）</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>cd &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10&#x2F;bin zkServer.sh start<br>    结果显示： [root@master bin]# .&#x2F;zkServer.sh start ZooKeeper JMX enabled by default Using config: &#x2F;export&#x2F;server&#x2F;zookeeper-3.4.10&#x2F;bin&#x2F;..&#x2F;conf&#x2F;zoo.cfg Starting zookeeper … STARTED</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>zookeeper 的状态</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>zkServer.sh status 结果显示： [root@master server]# zkServer.sh status ZooKeeper JMX enabled by default Using config: /export/server/zookeeper-3.4.10/bin/../conf/zoo.cfg Mode: follower [root@slave1 server]# zkServer.sh status ZooKeeper JMX enabled by default Using config: /export/server/zookeeper-3.4.10/bin/../conf/zoo.cfg Mode: follower [root@slave2 conf]# zkServer.sh status ZooKeeper JMX enabled by default Using config: /export/server/zookeeper-3.4.10/bin/../conf/zoo.cfg Mode: leader
+</code></pre>
+</blockquote>
+</blockquote>
+<p>jps 结果显示： </p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   [root@master server]# jps 125348 QuorumPeerMain 16311 Jps [root@slave1 server]# jps 126688 QuorumPeerMain 17685 Jps [root@slave2 conf]# jps 126733 QuorumPeerMain 17727 Jps</p>
+</blockquote>
+</blockquote>
+<p>脚本一键启动</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   vim zkServer.sh<br>  #!&#x2F;bin&#x2F;bash<br>  if [ $# -eq 0 ] ;<br>  then<br>       echo “please input param:start stop”<br>else<br>if [ $1 &#x3D; start ] ;then<br>   echo “${1}ing master”<br>   ssh master “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh start”<br>         for i in {1..2}<br>          do<br>             echo “${1}ping slave${i}” </p>
+</blockquote>
+</blockquote>
+<pre><code>         ssh slave$&#123;i&#125; &quot;source /etc/profile;/export/server/zookeeper/bin/zkServer.sh start&quot; 
+    done 
+</code></pre>
+<p>fi<br>if [ $1 &#x3D; stop ];then<br>    echo “${1}ping master “<br>    ssh master “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh stop”<br>    for i in {1..2}<br>    do<br>       echo “${1}ping slave${i}” ssh slave${i} “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh stop”<br>    done<br>fi<br>if [ $1 &#x3D; status ];then<br>    echo “${1}ing master”<br>    ssh master “source &#x2F;etc&#x2F;profile;&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh status”<br>    for i in {1..2}<br>    do<br>       echo “${1}ping slave${i}”<br>        ssh slave${i} “source &#x2F;etc&#x2F;profile;<br>&#x2F;export&#x2F;server&#x2F;zookeeper&#x2F;bin&#x2F;zkServer.sh status”<br>   done<br> fi<br> fi<br> #将文件放在 &#x2F;bin 目录下 chmod +x zkServer-all.sh &amp;&amp; zkServer-all.sh</p>
+<p>Hadoop 安装配置<br>把 hadoop-3.3.0-Centos7-64-with-snappy.tar.gz 上传到 &#x2F;export&#x2F;server 并解压文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>tar -zxvf hadoop-3.3.0-Centos7-64-with-snappy.tar.gz</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<pre><code>修改配置文件(进入路径 /export/server/hadoop-3.3.0/etc/hadoop)
+cd /export/server/hadoop-3.3.0/etc/hadoop
+hadoop-env.sh
+#文件最后添加 export JAVA_HOME=/export/server/jdk1.8.0_241 export HDFS_NAMENODE_USER=root export HDFS_DATANODE_USER=root export HDFS_SECONDARYNAMENODE_USER=root export YARN_RESOURCEMANAGER_USER=root export YARN_NODEMANAGER_USER=root
+core-site.xml
+&lt;!-- 设置默认使用的文件系统 Hadoop支持file、HDFS、GFS、ali|Amazon云等文件系统 - -&gt;
+&lt;property&gt; 
+         &lt;name&gt;fs.defaultFS&lt;/name&gt; 
+         &lt;value&gt;hdfs://master:8020&lt;/value&gt; 
+         &lt;/property&gt; 
+&lt;!-- 设置Hadoop本地保存数据路径 --&gt; 
+&lt;property&gt; 
+    &lt;name&gt;hadoop.tmp.dir&lt;/name&gt; 
+    &lt;value&gt;/export/data/hadoop-3.3.0&lt;/value&gt; 
+&lt;/property&gt; 
+&lt;!-- 设置HDFS web UI用户身份 --&gt; 
+&lt;property&gt; 
+     &lt;name&gt;hadoop.http.staticuser.user&lt;/name&gt; 
+     &lt;value&gt;root&lt;/value&gt; 
+&lt;/property&gt; 
+</code></pre>
+<!-- 整合hive 用户代理设置 -->
+<property> 
+    <name>hadoop.proxyuser.root.hosts</name> 
+    <value>*</value> 
+    </property>
+     <property> 
+     <name>hadoop.proxyuser.root.groups</name> 
+     <value>*</value> 
+     </property> <
+     !-- 文件系统垃圾桶保存时间 --> <property> 
+     <name>fs.trash.interval</name>
+      <value>1440</value> 
+    </property>
+    hdfs-site.xml
+    <!-- 设置SNN进程运行机器位置信息 --> 
+    <property> 
+    <name>dfs.namenode.secondary.http-address</name> <value>slave1:9868</value>
+     </property>
+    mapred-site.xml
+    <!-- 设置MR程序默认运行模式： yarn集群模式 local本地模式 --> <property> 
+    <name>mapreduce.framework.name</name> 
+    <value>yarn</value> 
+    </property> 
+    <!-- MR程序历史服务地址 -->
+     <property> 
+    <name>mapreduce.jobhistory.address</name> 
+    <value>master:10020</value> 
+    </property> 
+    <!-- MR程序历史服务器web端地址 --> 
+    <property> 
+    <name>mapreduce.jobhistory.webapp.address</name> <value>master:19888</value> 
+    </property> 
+    <property> 
+    <name>yarn.app.mapreduce.am.env</name> 
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value> 
+    </property> 
+    <property> 
+    <name>mapreduce.map.env</name> 
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value> 
+    </property> 
+    <property> 
+    <name>mapreduce.reduce.env</name>
+    <value>HADOOP_MAPRED_HOME=${HADOOP_HOME}</value> 
+    </property>
+yarn-site.xml
+<!-- 设置YARN集群主角色运行机器位置 --> 
+<property> 
+<name>yarn.resourcemanager.hostname</name> 
+<value>master</value> 
+</property> 
+<property>
+ <name>yarn.nodemanager.aux-services</name> 
+ <value>mapreduce_shuffle</value> 
+ </property>
+  <!-- 是否将对容器实施物理内存限制 --> 
+  <property>
+   <name>yarn.nodemanager.pmem-check-enabled</name> 
+   <value>false</value>
+    </property>
+     <!-- 是否将对容器实施虚拟内存限制。 --> 
+     <property> 
+     <name>yarn.nodemanager.vmem-check-enabled</name>
+      <value>false</value> 
+      </property>
+       <!-- 开启日志聚集 --> 
+       <property> <name>yarn.log-aggregation-enable</name> <value>true</value> 
+       </property>
+        <!-- 设置yarn历史服务器地址 --> 
+        <property> 
+        <name>yarn.log.server.url</name> 
+        <value>http://master:19888/jobhistory/logs</value> 
+        </property> 
+        <!-- 历史日志保存的时间 7天 --> 
+        <property> 
+        <name>yarn.log-aggregation.retain-seconds</name> <value>604800</value>
+         </property>
+
+<pre><code>     node1
+    node2
+      node3
+</code></pre>
+<p>分发同步hadoop安装包</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   cd &#x2F;export&#x2F;server<br>     scp -r hadoop-3.3.0 root@slave1:$PWD<br>     scp -r hadoop-3.3.0 root@slave2:$PWD<br>将hadoop添加到环境变量</p>
+<blockquote>
+</blockquote>
+<p>   vim &#x2F;etc&#x2F;profile export HADOOP_HOME&#x3D;&#x2F;export&#x2F;server&#x2F;hadoop-3.3.0 export PATH&#x3D;$PATH:$HADOOP_HOME&#x2F;bin:$HADOOP_HOME&#x2F;sbin</p>
+</blockquote>
+</blockquote>
+<p>重新加载环境变量文件</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<p>   source &#x2F;etc&#x2F;profile</p>
+</blockquote>
+</blockquote>
+<pre><code>Hadoop集群启动
+格式化namenode（只有首次启动需要格式化）
+hdfs namenode -format
+</code></pre>
+<p>脚本一键启动<br>    [root@master ~]# start-dfs.sh Starting namenodes on [master] 上一次登录：五 3月 11 21:27:24 CST 2022pts&#x2F;0 上 Starting datanodes 上一次登录：五 3月 11 21:27:32 CST 2022pts&#x2F;0 上 Starting secondary namenodes [slave1] 上一次登录：五 3月 11 21:27:35 CST 2022pts&#x2F;0 上 </p>
+<pre><code>[root@master ~]# start-yarn.sh Starting resourcemanager 上一次登录：五 3月 11 21:27:41 CST 2022pts/0 上 Starting nodemanagers 上一次登录：五 3月 11 21:27:51 CST 2022pts/0 上
+启动后 输入 jps 查看
+
+[root@master ~]# jps 127729 NameNode 127937 DataNode 14105 Jps 128812 NodeManager 128591 ResourceManager [root@slave1 hadoop]# jps 121889 NodeManager 121559 SecondaryNameNode 7014 Jps 121369 DataNode
+ [root@slave2 hadoop]# jps
+ 6673 Jps 121543 NodeManager 121098 DataNode
+</code></pre>
+<p>WEB页面<br>HDFS集群：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+</blockquote>
+<pre><code>http://master:9870/
+</code></pre>
+</blockquote>
+</blockquote>
+<p>YARN集群：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://master:9870/">http://master:9870/</a></p>
+</blockquote>
+</blockquote>
+</blockquote>
+</article></div></main><div class="nav-wrap"><div class="nav"><button class="site-nav"><div class="navicon"></div></button><ul class="nav_items"><li class="nav_item"><a class="nav-page" href="/#Publications"> Publications</a></li><li class="nav_item"><a class="nav-page" href="/"> About</a></li><li class="nav_item"><a class="nav-page" target="_blank" rel="noopener" href="https://phower.me"> Blog</a></li></ul></div><div class="cd-top"><i class="fa fa-arrow-up" aria-hidden="true"></i></div></div><footer id="page_footer"><div class="footer_wrap"><div class="copyright">&copy;2020 - 2022 by ohh</div><div class="theme-info">Powered by <a target="_blank" href="https://hexo.io" rel="nofollow noopener">Hexo</a> & <a target="_blank" href="https://github.com/PhosphorW/hexo-theme-academia" rel="nofollow noopener">Academia Theme</a></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery-pjax@latest/jquery.pjax.min.js"></script><script src="/js/main.js"></script></body></html>

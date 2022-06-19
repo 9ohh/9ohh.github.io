@@ -38,6 +38,15 @@
   </url>
   
   <url>
+    <loc>http://example.com/2022/05/22/spark1/</loc>
+    
+    <lastmod>2022-05-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2022/05/22/spark2/</loc>
     
     <lastmod>2022-05-22</lastmod>
@@ -48,15 +57,6 @@
   
   <url>
     <loc>http://example.com/2022/05/22/spark3/</loc>
-    
-    <lastmod>2022-05-22</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/2022/05/22/spark1/</loc>
     
     <lastmod>2022-05-22</lastmod>
     
